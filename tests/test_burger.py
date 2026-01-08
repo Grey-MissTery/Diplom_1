@@ -134,42 +134,29 @@ class TestBurger:
         receipt = burger_fixture.get_receipt()
         assert all(x in receipt for x in ("б" * 100, "т" * 100, "и" * 100))
 
-    @pytest.mark.parametrize(
-        "method, args, should_raise, needs_preparation",  # Параметры для тест-кейсов
-        BurgerTestData.NONE_PARAMETERS_CASES  # Данные из тестового набора
-    )
-    def test_none_handling(
-        self, 
-        burger_fixture,            # Бургер (пустой)
-        burger_with_ingredient,    # Бургер (с ингредиентом)
-        method,                    # Тестируемый метод
-        args,                      # Аргументы
-        should_raise,              # Флаг: ожидается исключение? (True/False)
-        needs_preparation          # Флаг: требуется бургер с ингредиентом? (True/False)
-    ):
-        """
-        Проверка обработки None-параметров в методах бургера.
-        Тестирует два сценария:
-        1. Методы, которые должны принимать None (set_buns, add_ingredient)
-        2. Методы, которые должны вызывать исключение (remove_ingredient, move_ingredient)
-        """
-        
-        # Выбираем наиболее подходящую фикстуру бургера в зависимости от тест-кейса
-        burger = burger_with_ingredient if needs_preparation else burger_fixture
-        
-        if should_raise:
-            # Методы должны вызывать исключение при None-параметрах
-            with pytest.raises((TypeError, IndexError)):  
-                getattr(burger, method)(*args) 
-        else:
-            # Методы должны принимать None без ошибок
-            getattr(burger, method)(*args)
-            
-            # Проверка состояния после вызова
-            if method == "set_buns":
-                # Булочка должна быть None
-                assert burger.bun is None, "Булочка должна быть None после set_buns(None)"
-                
-            elif method == "add_ingredient":
-                # Последний ингредиент должен быть None
-                assert burger.ingredients[-1] is None, "Последний ингредиент должен быть None"
+    
+    # Новые тесты для обработки None вместо одного параметризованного
+    def test_set_buns_with_none_should_not_raise(self, burger_fixture):
+        """Проверка, что set_buns принимает None без ошибок"""
+        burger_fixture.set_buns(None)
+        assert burger_fixture.bun is None
+
+    def test_add_ingredient_with_none_should_not_raise(self, burger_fixture):
+        """Проверка, что add_ingredient принимает None без ошибок"""
+        burger_fixture.add_ingredient(None)
+        assert burger_fixture.ingredients[-1] is None
+
+    def test_remove_ingredient_with_none_should_raise(self, burger_fixture):
+        """Проверка, что remove_ingredient вызывает TypeError при None-индексе"""
+        with pytest.raises(TypeError):
+            burger_fixture.remove_ingredient(None)
+
+    def test_move_ingredient_with_none_source_should_raise(self, burger_with_ingredient):
+        """Проверка, что move_ingredient вызывает TypeError при None как исходном индексе"""
+        with pytest.raises(TypeError):
+            burger_with_ingredient.move_ingredient(None, 0)
+
+    def test_move_ingredient_with_none_target_should_raise(self, burger_with_ingredient):
+        """Проверка, что move_ingredient вызывает TypeError при None как целевом индексе"""
+        with pytest.raises(TypeError):
+            burger_with_ingredient.move_ingredient(0, None)

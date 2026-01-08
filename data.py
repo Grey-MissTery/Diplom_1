@@ -55,19 +55,7 @@ class BurgerTestData:
         (250.55, [50.00], 551.10),                          
         (200, [500, 1500, 500, 150, 250], 3300)             
     ]
-    """Набор тестовых данных для проверки обработки None в Burger"""
-    NONE_PARAMETERS_CASES = [
-        # Формат:(method, args, should_raise, needs_preparation)
-        ## Принимают None без ошибок: 
-        ("set_buns", [None], False, False),                 # Установка None-булочки
-        ("add_ingredient", [None], False, False),           # Добавление None-ингредиента
-        ## TypeError (ожидают int, получают None):
-        ("remove_ingredient", [None], True, False),         # Удаление по None-индексу
-        ## Требуют ингредиент и вызывают TypeError:
-        ("move_ingredient", [None, 0], True, True),         # None как исходный индекс
-        ("move_ingredient", [0, None], True, True)          # None как целевой индекс
-    ]
-
+    
 
 class ReceiptData:
     EXP_ONLY_BUN = (
