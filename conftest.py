@@ -10,13 +10,27 @@ from data import *
 @pytest.fixture
 def bun_fixture(request):
     """Фикстура для создания экземпляра Bun с параметрами из теста"""
-    name, price = request.param
+    # Проверяем, переданы ли параметры
+    if hasattr(request, 'param'):
+        name, price = request.param
+    else:
+        # Значения по умолчанию
+        name = "default bun"
+        price = 100.0
     return Bun(name, price)
+
 
 @pytest.fixture
 def ingredient_fixture(request):
     """Фикстура для создания экземпляра Ingredient с параметрами из теста"""
-    ingredient_type, name, price = request.param
+    # Проверяем, переданы ли параметры
+    if hasattr(request, 'param'):
+        ingredient_type, name, price = request.param
+    else:
+        # Значения по умолчанию
+        ingredient_type = 'SAUCE'
+        name = "default ingredient"
+        price = 100.0
     return Ingredient(ingredient_type, name, price)
 
 @pytest.fixture
